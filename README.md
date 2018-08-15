@@ -3,7 +3,23 @@
 
 ## Features
 + Home-made Minesweeper Game
+
+<img src=./pics/minesweeper.png width="50%" height="50%" />
+
+
 + Self-playing reinforcement learning
+
+# How to use
++ Play MineSweeper Game by yourself
+        
+        cd alphaminesweeper
+        python alphaminesweeper.py --play
+
++ Train AI model for Minesweeper Game (Coming)
 
 ## Status
 Working on it
+
+## E-mail
+longyang_123@yeah.net  
+You're most welcome to contact with me to discuss the details about this project

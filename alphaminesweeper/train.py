@@ -3,6 +3,10 @@ Train process for AI model
 '''
 import numpy as np 
 
+class SelfplayEngine:
+    def __init__(self):
+        pass
+
 class TrainAI:
     def __init__(self, 
         state_shape, 

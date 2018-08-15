@@ -8,7 +8,7 @@ __version__ = "0.0.1"
 __author__ = "Yang Long"
 __info__ = "Play Minesweeper Game with AI"
 
-__default_board_shape__ = 9, 9
+__default_board_shape__ = 10, 10
 __default_state_shape__ = *__default_board_shape__, 1
 __filename__ = 'model.h5'
 
@@ -33,30 +33,14 @@ if __name__ == "__main__":
         if verbose:
             print("Start to re-train AI with state shape: {0}".format(__default_state_shape__))
 
-        from train import TrainAI
-
-        trainai = TrainAI(
-            state_shape=__default_state_shape__,
-            verbose=verbose
-        )
-        trainai.start(__filename__)
+        pass
 
     if args.playai:
-        from ai import AI
-        from sudoku import Sudoku
-
-        ai = AI(state_shape=__default_state_shape__, verbose=verbose)
-        ai.load_nnet(__filename__)
-
-        if verbose:
-            print("AI player has been initiated from file: {0}".format(__filename__))
-
-        sudoku = Sudoku(state_shape=__default_state_shape__, player=ai, verbose=verbose)
-        sudoku.ai_start()
+        pass
 
     if args.play:
         print("Play game. Please close game in terminal after closing window (i.e, Press Ctrl+C).")
-        from sudoku import Sudoku
+        from minesweeper import MineSweeper
 
-        sudoku = Sudoku(state_shape=__default_state_shape__, player=None, verbose=verbose)
-        sudoku.start()
+        minesweeper = MineSweeper(state_shape=__default_state_shape__,verbose=verbose)
+        minesweeper.start()
