@@ -42,22 +42,21 @@ class NeuralNetwork:
             for h in self.network_structure[1:]:
                 x = self.__res_block(x, h['filters'], h['kernel_size'])
 
-        value = self.__value_block(x)
-        action_prob = self.__action_prob_block(x)
+        #value = self.__value_block(x)
+        action_income = self.__action_prob_block(x)
 
-        model = Model(inputs=[input_tensor], outputs=[action_prob, value])
+        model = Model(inputs=[input_tensor], outputs=[action_income])
         model.compile(
-            loss={'policy': self.__policy_loss_function, 'value': 'mse'},
-			optimizer=Adam(self.learning_rate),	
-			loss_weights={'policy': 0.5, 'value': 0.5}	
+            loss=self.__policy_loss_function,
+			optimizer=Adam(self.learning_rate)
 			)
         
         return model
 
     def __policy_loss_function(self, y_true, y_pred):
-        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred)
-	    return loss
-        # return K.sum(K.square(y_pred - y_true), axis=-1)
+        # loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred)
+	    # return loss
+        return K.sum(K.square(y_pred - y_true), axis=-1)
 
     def __conv_block(self, x, filters, kernel_size):
         '''
@@ -113,42 +112,42 @@ class NeuralNetwork:
 
         out = Dense(
             self.output_dim,
-            activation='sigmoid',
+            activation='tanh',
             kernel_regularizer=regularizers.l2(self.l2_const),
             name='policy'
         )(out)
 
         return out
 
-    def __value_block(self, x):
-        '''
-        Action Neural Network
-        '''
-        out = Conv2D(
-            filters = 1,
-            kernel_size = 1,
-            padding = 'same',
-            activation= 'linear',
-            kernel_regularizer = regularizers.l2(self.l2_const)
-        )(x)
-        out = BatchNormalization(axis=1)(out)
-        out = LeakyReLU()(out)
+    # def __value_block(self, x):
+    #     '''
+    #     Action Neural Network
+    #     '''
+    #     out = Conv2D(
+    #         filters = 1,
+    #         kernel_size = 1,
+    #         padding = 'same',
+    #         activation= 'linear',
+    #         kernel_regularizer = regularizers.l2(self.l2_const)
+    #     )(x)
+    #     out = BatchNormalization(axis=1)(out)
+    #     out = LeakyReLU()(out)
 
-        out = Flatten()(out)
-        out = Dense(
-            24,
-            activation='relu',
-            kernel_regularizer=regularizers.l2(self.l2_const),
-        )(out)
+    #     out = Flatten()(out)
+    #     out = Dense(
+    #         24,
+    #         activation='relu',
+    #         kernel_regularizer=regularizers.l2(self.l2_const),
+    #     )(out)
 
-        out = Dense(
-            1,
-            activation='tanh',
-            kernel_regularizer=regularizers.l2(self.l2_const),
-            name='value'
-        )(out)
+    #     out = Dense(
+    #         1,
+    #         activation='tanh',
+    #         kernel_regularizer=regularizers.l2(self.l2_const),
+    #         name='value'
+    #     )(out)
 
-        return out
+    #     return out
 
     def fit(self, Xs, ys, epochs, batch_size):
         history = self.model.fit(Xs, ys, epochs=epochs, batch_size=batch_size)
@@ -160,8 +159,8 @@ class NeuralNetwork:
 
     def predict(self, X):
         X = X.reshape(self.input_shape)
-        action_prob, value = self.model.predict([X])
-        return action_prob[0], value[0]
+        action_income  = self.model.predict([X])
+        return action_income[0]
 
     def save_model(self, filename):
         self.model.save_weights(filename)
@@ -195,22 +194,29 @@ class AI:
             network_structure=network_structure,
             verbose=verbose)
 
+    def get_state_shape(self):
+        return np.copy(self.state_shape)
+
+    def get_action_dim(self):
+        return self.action_dim
+
     def train(self, dataset, epochs, batch_size):
-        states, action_probs, values = dataset
+        states, action_incomes = dataset
         history = self.nnet.fit(
-            states, [action_probs, values],
+            states, action_incomes,
             epochs=epochs, batch_size=batch_size)
         return history
 
     def update(self, dataset):
-        states, action_probs, values = dataset
-        loss = self.nnet.update(states, [action_probs, values])
+        states, action_incomes = dataset
+        loss = self.nnet.update(states, action_incomes)
         return loss
 
     def play(self, state):
-        action_prob, value = self.nnet.predict(state)
-        action = np.argmax(action_prob)
-        return action
+        action_incomes = self.nnet.predict(state)
+        action_incomes = np.rint(action_incomes).astype(int)
+        action = np.argmax(action_incomes)
+        return action, action_incomes
 
     def save_nnet(self, filename):
         self.nnet.save_model(filename)

@@ -10,6 +10,7 @@ __info__ = "Play Minesweeper Game with AI"
 
 __default_board_shape__ = 10, 10
 __default_state_shape__ = *__default_board_shape__, 1
+__default_action_dim__ = 100
 __filename__ = 'model.h5'
 
 if __name__ == "__main__":
@@ -25,18 +26,57 @@ if __name__ == "__main__":
 
     if args.train:
         if verbose:
-            print("Start to train AI")
+            print("Continue to train AI with state shape: {0}".format(__default_state_shape__))
 
-        # TODO Load lastest model here and continue training
+        from ai import AI
+        from train import TrainAI
+
+        ai = AI(
+                state_shape=__default_state_shape__,
+                action_dim=__default_action_dim__,
+                verbose=verbose
+            )
+
+        if verbose:
+            print("Load AI model from file: [{0}] ...".format(__filename__),end="")
+
+        ai.load_nnet(__filename__)
+
+        if verbose:
+            print("OK!")
+        
+
+        trainai = TrainAI(
+            state_shape=__default_state_shape__, 
+            action_dim=__default_action_dim__,
+            ai=ai,
+            verbose=verbose
+        )
+        trainai.start(__filename__)
+        
+        if verbose:
+            print("Trained AI model is saved as: [{0}]".format(__filename__))
 
     if args.retrain:
         if verbose:
             print("Start to re-train AI with state shape: {0}".format(__default_state_shape__))
 
-        pass
+        from train import TrainAI
+
+        trainai = TrainAI(
+            state_shape=__default_state_shape__, 
+            action_dim=__default_action_dim__,
+            verbose=verbose
+        )
+        trainai.start(__filename__)
+
+        if verbose:
+            print("Re-trained AI model is saved as: [{0}]".format(__filename__))
 
     if args.playai:
         pass
+
+        # TODO a special visualization approach of AI-customed mine-sweeper game process
 
     if args.play:
         print("Play game. Please close game in terminal after closing window (i.e, Press Ctrl+C).")

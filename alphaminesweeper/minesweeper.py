@@ -13,7 +13,7 @@ class HumanPlayer:
     def play(self, state):
         action = self.action
         self.action = -1
-        return action
+        return action, None
 
     def setaction(self, pos):
         Nx, Ny, channel = self.state_shape
@@ -34,7 +34,8 @@ class GameEngine:
 
     def update_states(self):
         status_board = self.mineboard.get_status_board()
-        self.states.append(status_board)
+        state = status_board.reshape(self.state_shape)
+        self.states.append(state)
 
     def get_state(self):
         return self.states[-1]
@@ -48,7 +49,7 @@ class GameEngine:
         self.update_states()
         
     def update(self):
-        action = self.player.play(self.get_state)
+        action, prob = self.player.play(self.get_state())
         return self.mineboard.play(action)
 
 class MineSweeper:

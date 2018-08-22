@@ -4,15 +4,36 @@ Game utilities for Minesweeper
 import numpy as np
 
 class MineBoard:
-    def __init__(self, board_shape, p=0.1, verbose=False):
+    def __init__(self, board_shape, p=0.1, 
+        mine_board=None,
+        n_mine_board=None,
+        status_board=None,
+        availables=None,
+        verbose=False):
+
         self.board_shape = board_shape
         self.p = p
 
-        self.mine_board = None
-        self.n_mine_board = None
-        self.status_board = None
+        if mine_board is not None:
+            self.mine_board = mine_board
+        else:
+            self.mine_board = None
 
-        self.availables = list()
+        if n_mine_board is not None:
+            self.n_mine_board = n_mine_board
+        else:
+            self.n_mine_board = None
+
+        if status_board is not None:
+            self.status_board = status_board
+        else:
+            self.status_board = None
+
+        if availables is not None:
+            self.availables = availables
+        else:
+            self.availables = list()
+
         self.verbose = verbose
 
     def init(self):
@@ -51,12 +72,16 @@ class MineBoard:
             print("OK!")
 
     def play(self, action):
+        '''
+        Flag: whether to continue playing
+        is_win: check whether the player win
+        '''
         Nx, Ny = self.board_shape
         if (action < 0) or (action >= Nx*Ny):
             return True, False
 
         pos = (action%Nx, int(action/Nx))
-
+        
         if self.mine_board[pos] != 0:
             return False, False
 
@@ -115,3 +140,15 @@ class MineBoard:
 
     def get_status_board(self):
         return np.copy(self.status_board)
+
+    def clone(self):
+        mineboard = MineBoard(
+            board_shape=self.board_shape,
+            p=self.p,
+            mine_board=self.mine_board,
+            n_mine_board=self.n_mine_board,
+            status_board=self.status_board,
+            availables=self.availables,
+            verbose=self.verbose
+        )
+        return mineboard
