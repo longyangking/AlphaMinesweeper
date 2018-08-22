@@ -6,7 +6,6 @@
 
 <img src=./pics/minesweeper.png width="50%" height="50%" />
 
-
 + Self-playing reinforcement learning
 
 # How to use
@@ -15,7 +14,17 @@
         cd alphaminesweeper
         python alphaminesweeper.py --play
 
-+ Train AI model for Minesweeper Game (Coming)
++ Re-Train AI model for Minesweeper Game
+
+        cd alphaminesweeper
+        python alphaminesweeper.py --retrain --verbose
+
++ Continue to train AI model for Minesweeper Game
+
+        cd alphaminesweeper
+        python alphaminesweeper.py --train --verbose
+
++ Visualize AI model to play Minesweeper Game (Coming)
 
 ## Status
 Working on it
