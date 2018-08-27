@@ -8,13 +8,19 @@
 
 + Self-playing reinforcement learning
 
-# How to use
+## Requirements
++ Numpy
++ Keras, Tensorflow
++ h5py
++ PyQt5 (for visualizing) 
+
+## How to use
 + Play MineSweeper Game by yourself
         
         cd alphaminesweeper
         python alphaminesweeper.py --play
 
-+ Re-Train AI model for Minesweeper Game
++ Re-Train AI model for Minesweeper Game (The model will saved as "model.h5")
 
         cd alphaminesweeper
         python alphaminesweeper.py --retrain --verbose
@@ -24,10 +30,10 @@
         cd alphaminesweeper
         python alphaminesweeper.py --train --verbose
 
-+ Visualize AI model to play Minesweeper Game (Coming)
++ Visualize AI model to play Minesweeper Game
 
-## Status
-Working on it
+        cd alphaminesweeper
+        python alphaminesweeper.py --playai --verbose
 
 ## E-mail
 longyang_123@yeah.net  
