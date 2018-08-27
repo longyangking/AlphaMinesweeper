@@ -3,7 +3,7 @@ Main enigne for Minesweeper
 '''
 import numpy as np 
 from gameutils import MineBoard
-from ui import UI
+from ui import UI, Viewer
 
 class HumanPlayer:
     def __init__(self, state_shape):
@@ -48,9 +48,15 @@ class GameEngine:
         self.mineboard.init()
         self.update_states()
         
-    def update(self):
-        action, prob = self.player.play(self.get_state())
-        return self.mineboard.play(action)
+    def update(self, is_ai=False):
+        action, _action_incomes = self.player.play(self.get_state())
+        if is_ai:
+            availables = self.mineboard.get_availables()
+            action_incomes = -1*np.ones(_action_incomes.shape)
+            action_incomes[availables] = _action_incomes[availables]
+            action = np.argmax(action_incomes)
+        flag, is_win = self.mineboard.play(action)
+        return flag, is_win, action
 
 class MineSweeper:
     def __init__(self, state_shape, verbose=False):
@@ -67,7 +73,7 @@ class MineSweeper:
 
     def setaction(self, pos):
         self.player.setaction(pos)
-        flag, is_win = self.gameengine.update()
+        flag, is_win, action = self.gameengine.update()
         self.ui.setboard(boardinfo=self.gameengine.get_board())
 
         if not flag:
@@ -85,6 +91,46 @@ class MineSweeper:
 
         if self.verbose:
             print("OK!")
+
+class VisualizeAI:
+    def __init__(self, state_shape, ai, verbose):
+        self.state_shape = state_shape
+        self.ai = ai
+        self.verbose = verbose
+
+        self.status_boards = list()
+        self.positions = list()
+
+    def start(self):
+        if self.verbose:
+            print("Running a new game for AI ...")
+
+        Nx, Ny, channel = self.state_shape
+        gameengine = GameEngine(state_shape=self.state_shape, player=self.ai, verbose=self.verbose)
+        gameengine.init()
+
+        self.status_boards.append(gameengine.get_board())
+        flag, is_win, action = gameengine.update(is_ai=True)
+        position = (action%Nx, int(action/Nx))
+        self.positions.append(position)
+
+        while flag:
+            self.status_boards.append(gameengine.get_board())
+            flag, is_win, action = gameengine.update(is_ai=True)
+            position = (action%Nx, int(action/Nx))
+            self.positions.append(position)
+
+        self.status_boards.append(gameengine.get_board())
+
+        if self.verbose:
+            print("End of game with steps [{0}]. Start to visualize ...".format(len(self.positions)))
+
+        ui = Viewer(
+            status_boards=self.status_boards, 
+            positions=self.positions, 
+            is_win=is_win)
+
+        ui.start()
         
 if __name__=='__main__':
     # Just for debugging

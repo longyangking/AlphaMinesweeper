@@ -74,9 +74,31 @@ if __name__ == "__main__":
             print("Re-trained AI model is saved as: [{0}]".format(__filename__))
 
     if args.playai:
-        pass
+        if verbose:
+            print("Visualize Minesweeper with AI [state shape: {0}]".format(__default_state_shape__))
 
-        # TODO a special visualization approach of AI-customed mine-sweeper game process
+        from ai import AI
+        from minesweeper import VisualizeAI
+
+        ai = AI(
+                state_shape=__default_state_shape__,
+                action_dim=__default_action_dim__,
+                verbose=verbose
+            )
+        if verbose:
+            print("Load AI model from file: [{0}] ...".format(__filename__),end="")
+
+        ai.load_nnet(__filename__)
+        if verbose:
+            print("OK!")
+
+        vi = VisualizeAI(
+            state_shape=__default_state_shape__,
+            ai=ai,
+            verbose=verbose
+        )
+
+        vi.start()
 
     if args.play:
         print("Play game. Please close game in terminal after closing window (i.e, Press Ctrl+C).")

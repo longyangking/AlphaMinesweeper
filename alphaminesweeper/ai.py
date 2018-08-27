@@ -158,8 +158,8 @@ class NeuralNetwork:
         return loss
 
     def predict(self, X):
-        X = X.reshape(self.input_shape)
-        action_income  = self.model.predict([X])
+        X = X.reshape(1, *self.input_shape)
+        action_income  = self.model.predict(X)
         return action_income[0]
 
     def save_model(self, filename):

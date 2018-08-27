@@ -120,9 +120,9 @@ class TrainAI:
             data = engine.start()
             self_states, self_action_incomes = data
 
-            for i in range(len(self_action_incomes)):
-                states.append(self_states[i])
-                action_incomes.append(self_action_incomes[i])
+            for j in range(len(self_action_incomes)):
+                states.append(self_states[j])
+                action_incomes.append(self_action_incomes[j])
 
             count += len(self_action_incomes)
                 
